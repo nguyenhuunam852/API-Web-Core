@@ -20,6 +20,7 @@ namespace API_Web_Core.Models
         //public virtual DbSet<PivotUserRole> PivotUserRoles { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<GetRoles> GetRoles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -55,6 +56,7 @@ namespace API_Web_Core.Models
 
                 entity.Property(e => e.RoleDescription)
                     .HasColumnType("text")
+                    .IsRequired(false)
                     .HasColumnName("role_description");
 
                 entity.Property(e => e.RoleKey)
@@ -99,6 +101,14 @@ namespace API_Web_Core.Models
                     .IsUnicode(false)
                     .HasColumnName("user_password");
             });
+
+            modelBuilder.Entity<GetRoles>(entity =>
+            {
+                entity.ToTable(null);
+                entity.HasNoKey();
+            });
+
+
 
             OnModelCreatingPartial(modelBuilder);
         }

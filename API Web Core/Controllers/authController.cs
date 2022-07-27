@@ -54,10 +54,9 @@ namespace API_Web_Core.Controllers
         [HttpGet]
         public ActionResult<Object> GetRoles()
         {
-            User_DTO userDto = (User_DTO)HttpContext.Items["User"]; 
-
-
-            return Ok("Hi!");
+            User_DTO userDto = (User_DTO)HttpContext.Items["User"];
+            IEnumerable<string> getRoles = _userRepository.getRolesbyUserId(userDto.userid).Select(x=>x.Key);
+            return Ok(getRoles);
 
         }
 

@@ -3,6 +3,7 @@ using API_Web_Core.DTO.Auth;
 using API_Web_Core.DTO.User;
 using API_Web_Core.Helpers;
 using API_Web_Core.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -11,7 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 
 namespace API_Web_Core.Repository
 {
@@ -24,9 +25,29 @@ namespace API_Web_Core.Repository
             _appSettings = appSettings.Value;
         }
 
-        public Object getRolesbyUserId(int userId)
+        public IEnumerable<GetRoles> getRolesbyUserId(int userId)
         {
-            //using (var ctx = new dbContext())
+
+            using (var ctx = new dbContext())
+            {
+                var getRoles = ctx.GetRoles.FromSqlRaw(
+                    @"WITH previous(Id, [Key]) AS (
+                      SELECT role_id,
+                             role_key
+                      FROM   roles roles
+                      WHERE  role_id = 1
+                      UNION ALL
+                      SELECT curRoles.role_id,
+                             curRoles.role_key
+                      FROM   roles curRoles, previous pr
+                      WHERE  curRoles.parent_id = pr.Id
+                    )
+                    SELECT previous.*
+                    FROM   previous;
+                ", userId);
+
+                return getRoles.ToList();
+            }
             //{
             //    var student = (from s in ctx.Roles 
             //                   join pivot in ctx.PivotUserRoles on s.RoleId equals pivot.RoleId
