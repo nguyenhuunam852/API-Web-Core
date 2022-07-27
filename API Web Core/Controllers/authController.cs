@@ -1,5 +1,7 @@
 ﻿using API_Web_Core.DTO;
 using API_Web_Core.DTO.Auth;
+using API_Web_Core.DTO.User;
+using API_Web_Core.Helpers;
 using API_Web_Core.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,8 +20,7 @@ namespace API_Web_Core.Controllers
     {
         private readonly IConfiguration _config;
         private readonly IUserRepo _userRepository;
-        private string generatedToken = null;
-
+       
         public authController(IConfiguration config, IUserRepo userRepository)
         {
             _config = config;
@@ -47,5 +48,18 @@ namespace API_Web_Core.Controllers
                 return Unauthorized();
             }
         }
+
+        [JwtAuthorize]
+        [Route("roles")]
+        [HttpGet]
+        public ActionResult<Object> GetRoles()
+        {
+            User_DTO userDto = (User_DTO)HttpContext.Items["User"]; 
+
+
+            return Ok("Hi!");
+
+        }
+
     }
 }

@@ -18,6 +18,7 @@ namespace API_Web_Core.Models
         public string UserPassword { get; set; }
 
         public virtual ICollection<PivotUserRole> PivotUserRoles { get; set; }
+        public virtual ICollection<Role> Roles { get; set; }
 
         public static explicit operator User_DTO(User obj)
         {

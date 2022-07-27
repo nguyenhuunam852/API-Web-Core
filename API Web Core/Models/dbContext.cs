@@ -6,18 +6,18 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace API_Web_Core.Models
 {
-    public partial class ASP_core_apiContext : DbContext
+    public partial class dbContext : DbContext
     {
-        public ASP_core_apiContext()
+        public dbContext()
         {
         }
 
-        public ASP_core_apiContext(DbContextOptions<ASP_core_apiContext> options)
+        public dbContext(DbContextOptions<dbContext> options)
             : base(options)
         {
         }
 
-        public virtual DbSet<PivotUserRole> PivotUserRoles { get; set; }
+        //public virtual DbSet<PivotUserRole> PivotUserRoles { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
@@ -25,7 +25,7 @@ namespace API_Web_Core.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=ASP_core_api;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=VideoAspCore;Trusted_Connection=True;");
             }
         }
 
@@ -33,37 +33,25 @@ namespace API_Web_Core.Models
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<PivotUserRole>(entity =>
-            {
-                entity.HasKey(e => e.PivotId)
-                    .HasName("PK__pivot_us__33876BBA908071C1");
-
-                entity.ToTable("pivot_user_role");
-
-                entity.Property(e => e.PivotId).HasColumnName("pivot_id");
-
-                entity.Property(e => e.RoleId).HasColumnName("role_id");
-
-                entity.Property(e => e.UserId).HasColumnName("user_id");
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.PivotUserRoles)
-                    .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__pivot_use__role___3B75D760");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.PivotUserRoles)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__pivot_use__user___3A81B327");
-            });
-
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.ToTable("roles");
 
-                entity.Property(e => e.RoleId).HasColumnName("role_id");
+                entity.HasKey(e => e.RoleId);
+
+                entity.Property(e => e.RoleId).ValueGeneratedOnAdd().HasColumnName("role_id");
+
+                entity.Property(e => e.parentID).HasColumnName("parent_id");
+
+                //entity.HasMany(d => d.Users)
+                //    .WithMany(p => p.Roles).UsingEntity(j => j.ToTable("pivot_user_role"));
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.childRoles)
+                    .HasForeignKey(d => d.parentID)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__pivot_parent__role___4A75D761");
+
 
                 entity.Property(e => e.RoleDescription)
                     .HasColumnType("text")
@@ -80,7 +68,24 @@ namespace API_Web_Core.Models
             {
                 entity.ToTable("users");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.HasKey(e => e.UserId);
+
+                entity.Property(e => e.UserId).ValueGeneratedOnAdd().HasColumnName("user_id");
+
+                entity.HasMany(d => d.Roles)
+                    .WithMany(p => p.Users).UsingEntity<PivotUserRole>(
+                        j => j
+                            .HasOne(pt => pt.Role)
+                            .WithMany(t => t.PivotUserRoles)
+                            .HasForeignKey(pt => pt.RoleId),
+                        j => j
+                            .HasOne(pt => pt.User)
+                            .WithMany(p => p.PivotUserRoles)
+                            .HasForeignKey(pt => pt.UserId),
+                        j =>
+                        {
+                            j.HasKey(t => new { t.RoleId, t.UserId });
+                        });
 
                 entity.Property(e => e.UserName)
                     .IsRequired()

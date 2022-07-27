@@ -24,9 +24,23 @@ namespace API_Web_Core.Repository
             _appSettings = appSettings.Value;
         }
 
+        public Object getRolesbyUserId(int userId)
+        {
+            //using (var ctx = new dbContext())
+            //{
+            //    var student = (from s in ctx.Roles 
+            //                   join pivot in ctx.PivotUserRoles on s.RoleId equals pivot.RoleId
+            //                   where s. == "Bill"
+            //                   select s)
+            //                  .Where(s => s.StudentName == name)
+            //                  .FirstOrDefault<Student>();
+            //}
+            return null;
+        }
+
         public Login_Response_dto GetUserbyLogin(Login_Request_dto userMode)
         {
-            using (var context = new ASP_core_apiContext())
+            using (var context = new dbContext())
             {
                 var user = context.Users.Where(x => x.UserName.ToLower() == userMode.user_name.ToLower() && x.UserPassword == userMode.user_password).FirstOrDefault();
                 if (user == null) return null;
@@ -37,7 +51,7 @@ namespace API_Web_Core.Repository
 
         public User_DTO GetUserbyId(int id)
         {
-            using (var context = new ASP_core_apiContext())
+            using (var context = new dbContext())
             {
                 return (User_DTO)context.Users.Where(x => x.UserId == id).FirstOrDefault();
             }

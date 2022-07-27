@@ -13,5 +13,6 @@ namespace API_Web_Core.Repository
     {
         Login_Response_dto GetUserbyLogin(Login_Request_dto userMode);
         User_DTO GetUserbyId(int id);
+        Object getRolesbyUserId(int userId);  
     }
 }

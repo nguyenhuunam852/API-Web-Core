@@ -15,19 +15,22 @@ namespace API_Web_Core.Helpers
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
+        private readonly IUserRepo _userService;
 
-        public JwtMiddleWare(RequestDelegate next, IOptions<AppSettings> appSettings)
+
+        public JwtMiddleWare(RequestDelegate next, IOptions<AppSettings> appSettings, IUserRepo userService)
         {
             _next = next;
             _appSettings = appSettings.Value;
+            _userService = userService;
         }
 
-        public async Task Invoke(HttpContext context, IUserRepo userService)
+        public async Task Invoke(HttpContext context)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                attachUserToContext(context, userService, token);
+                attachUserToContext(context, _userService, token);
 
             await _next(context);
         }
