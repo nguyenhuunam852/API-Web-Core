@@ -20,6 +20,7 @@ namespace API_Web_Core.Models
         //public virtual DbSet<PivotUserRole> PivotUserRoles { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Permission> Permissions { get; set; }
         public virtual DbSet<GetRoles> GetRoles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -43,9 +44,6 @@ namespace API_Web_Core.Models
                 entity.Property(e => e.RoleId).ValueGeneratedOnAdd().HasColumnName("role_id");
 
                 entity.Property(e => e.parentID).HasColumnName("parent_id");
-
-                //entity.HasMany(d => d.Users)
-                //    .WithMany(p => p.Roles).UsingEntity(j => j.ToTable("pivot_user_role"));
 
                 entity.HasOne(d => d.Parent)
                     .WithMany(p => p.childRoles)
@@ -100,6 +98,45 @@ namespace API_Web_Core.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("user_password");
+            });
+
+            modelBuilder.Entity<Permission>(entity =>
+            {
+                entity.ToTable("permissions");
+
+                entity.HasKey(e => e.PermissionId);
+
+                entity.Property(e => e.PermissionId).ValueGeneratedOnAdd().HasColumnName("permission_id");
+
+                entity.HasMany(d => d.Roles)
+                    .WithMany(p => p.Permissions).UsingEntity<PivotRolePermission>(
+                        j => j
+                            .HasOne(pt => pt.Role)
+                            .WithMany(t => t.PivotRolePermission)
+                            .HasForeignKey(pt => pt.RoleId),
+                        j => j
+                            .HasOne(pt => pt.Permission)
+                            .WithMany(p => p.PivotRolePermission)
+                            .HasForeignKey(pt => pt.PermissionId),
+                        j =>
+                        {
+                            j.HasKey(t => new { t.RoleId, t.PermissionId });
+                        });
+
+                entity.Property(e => e.PermissionKey)
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .IsUnicode(false)
+                    .HasColumnName("permission_key");
+
+                entity.HasIndex(e => e.PermissionKey).IsUnique();
+
+
+                entity.Property(e => e.PermissionDescription)
+                    .HasColumnType("text")
+                    .IsRequired(false)
+                    .HasColumnName("permission_description");
+                   
             });
 
             modelBuilder.Entity<GetRoles>(entity =>

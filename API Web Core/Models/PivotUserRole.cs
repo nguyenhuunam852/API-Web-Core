@@ -7,7 +7,6 @@ namespace API_Web_Core.Models
 {
     public partial class PivotUserRole
     {
-        public int PivotId { get; set; }
         public int RoleId { get; set; }
         public int UserId { get; set; }
 

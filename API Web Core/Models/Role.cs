@@ -20,6 +20,10 @@ namespace API_Web_Core.Models
         public virtual ICollection<User> Users { get; set; }
         public virtual ICollection<PivotUserRole> PivotUserRoles { get; set; }
         public virtual ICollection<Role> childRoles { get; set; }
+
+        public virtual ICollection<Permission> Permissions { get; set; }
+        public virtual ICollection<PivotRolePermission> PivotRolePermission { get; set; }
+
         public virtual Role Parent { get; set; }
 
     }

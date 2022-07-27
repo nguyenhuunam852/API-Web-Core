@@ -35,7 +35,7 @@ namespace API_Web_Core.Repository
                       SELECT role_id,
                              role_key
                       FROM   roles roles
-                      WHERE  role_id = 1
+                      WHERE  role_id = {0}
                       UNION ALL
                       SELECT curRoles.role_id,
                              curRoles.role_key
