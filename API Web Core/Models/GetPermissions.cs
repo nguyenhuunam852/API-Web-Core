@@ -2,9 +2,8 @@
 
 namespace API_Web_Core.Models
 {
-    public class GetRoles
+    public class GetPermissions
     {
-        public int Id { get; set; }
         public string Key { get; set; }
     }
 }

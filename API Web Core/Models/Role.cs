@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace API_Web_Core.Models
 {
-    public partial class Role
+    public partial class Role: BaseModels
     {
         public Role()
         {

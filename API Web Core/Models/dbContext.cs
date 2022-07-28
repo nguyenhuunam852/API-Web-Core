@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -17,11 +18,31 @@ namespace API_Web_Core.Models
         {
         }
 
+        public override int SaveChanges()
+        {
+            var entries = ChangeTracker
+                .Entries()
+                .Where(e => e.Entity is BaseModels && (
+                        e.State == EntityState.Added
+                        || e.State == EntityState.Modified));
+
+            foreach (var entityEntry in entries)
+            {
+                ((BaseModels)entityEntry.Entity).UpdatedDate = DateTime.Now;
+
+                if (entityEntry.State == EntityState.Added)
+                {
+                    ((BaseModels)entityEntry.Entity).CreatedDate = DateTime.Now;
+                }
+            }
+            return base.SaveChanges();
+        }
+
         //public virtual DbSet<PivotUserRole> PivotUserRoles { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Permission> Permissions { get; set; }
-        public virtual DbSet<GetRoles> GetRoles { get; set; }
+        public virtual DbSet<GetPermissions> GetPermissions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -139,7 +160,7 @@ namespace API_Web_Core.Models
                    
             });
 
-            modelBuilder.Entity<GetRoles>(entity =>
+            modelBuilder.Entity<GetPermissions>(entity =>
             {
                 entity.ToTable(null);
                 entity.HasNoKey();

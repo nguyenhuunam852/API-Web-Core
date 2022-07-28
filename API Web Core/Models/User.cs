@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace API_Web_Core.Models
 {
-    public partial class User
+    public partial class User:BaseModels
     {
         public User()
         {

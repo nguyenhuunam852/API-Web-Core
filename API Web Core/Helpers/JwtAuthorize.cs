@@ -13,6 +13,14 @@ namespace API_Web_Core.Helpers
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class JwtAuthorize : Attribute, IAuthorizationFilter
     {
+        public JwtAuthorize()
+        {
+        }
+        public JwtAuthorize(string? test)
+        {
+            var test1 = test;
+            var test2 = 1;
+        }
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var user = (User_DTO)context.HttpContext.Items["User"];

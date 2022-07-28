@@ -15,7 +15,6 @@ namespace API_Web_Core.Controllers
     [ApiController]
     public class usersController : ControllerBase
     {
-        // GET: api/<usersController>
         [JwtAuthorize]
         [HttpGet]
         public IEnumerable<string> Get()

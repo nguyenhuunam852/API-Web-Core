@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API_Web_Core.Models
 {
-    public class Permission
+    public class Permission: BaseModels
     {
         [Key]
         public int PermissionId { get; set; }

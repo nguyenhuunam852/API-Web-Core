@@ -13,6 +13,6 @@ namespace API_Web_Core.Repository
     {
         Login_Response_dto GetUserbyLogin(Login_Request_dto userMode);
         User_DTO GetUserbyId(int id);
-        IEnumerable<GetRoles> getRolesbyUserId(int userId);  
+        IEnumerable<GetPermissions> getRolesbyUserId(int userId);  
     }
 }

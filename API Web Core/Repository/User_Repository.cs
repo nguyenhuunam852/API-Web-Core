@@ -25,38 +25,40 @@ namespace API_Web_Core.Repository
             _appSettings = appSettings.Value;
         }
 
-        public IEnumerable<GetRoles> getRolesbyUserId(int userId)
+        public IEnumerable<GetPermissions> getRolesbyUserId(int userId)
         {
 
             using (var ctx = new dbContext())
             {
-                var getRoles = ctx.GetRoles.FromSqlRaw(
-                    @"WITH previous(Id, [Key]) AS (
-                      SELECT role_id,
-                             role_key
-                      FROM   roles roles
-                      WHERE  role_id = {0}
+                var getRoles = ctx.GetPermissions.FromSqlRaw(
+                    @"
+                      WITH previous(Id, [Key], [path]) AS (
+                      SELECT p.permission_id as Id,
+                             p.permission_key as [Key],
+                    		 '/' + convert(varchar(max), case when roles.parent_id is not null then roles.parent_id else 0 end) + '/' [path]
+                      FROM   roles roles 
+                      join PivotUserRole pur on roles.role_id = pur.RoleId
+                      join PivotRolePermission prp on roles.role_id = prp.RoleId
+                      join [permissions] p on permission_id = prp.PermissionId
+                      WHERE  pur.UserId = {0} 
                       UNION ALL
-                      SELECT curRoles.role_id,
-                             curRoles.role_key
-                      FROM   roles curRoles, previous pr
-                      WHERE  curRoles.parent_id = pr.Id
+                      SELECT curTable.permission_id as Id,
+                    		 curTable.permission_key as [Key],
+                    		 pr.[path] + convert(varchar(max),curTable.parent_id) + '/'
+                      FROM   (
+                         select curRoles.parent_id as parent_id,p.permission_id,p.permission_key from
+                         roles curRoles 
+                    	 join PivotRolePermission prp on curRoles.role_id = prp.RoleId
+                         join [permissions] p on permission_id = prp.PermissionId
+                      ) curTable, previous pr
+                      WHERE  curTable.parent_id = pr.Id and pr.[path] not like '%/' + rtrim(curTable.parent_id) + '/%'
                     )
-                    SELECT previous.*
-                    FROM   previous;
+                    SELECT distinct previous.[Key]
+                    FROM   previous;     
                 ", userId);
 
                 return getRoles.ToList();
             }
-            //{
-            //    var student = (from s in ctx.Roles 
-            //                   join pivot in ctx.PivotUserRoles on s.RoleId equals pivot.RoleId
-            //                   where s. == "Bill"
-            //                   select s)
-            //                  .Where(s => s.StudentName == name)
-            //                  .FirstOrDefault<Student>();
-            //}
-            return null;
         }
 
         public Login_Response_dto GetUserbyLogin(Login_Request_dto userMode)
