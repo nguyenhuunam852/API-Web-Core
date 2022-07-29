@@ -1,4 +1,5 @@
 using API_Web_Core.Helpers;
+using API_Web_Core.Interface;
 using API_Web_Core.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -38,6 +39,7 @@ namespace API_Web_Core
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddTransient<IUserRepo, User_Service>();
+            services.AddSingleton<IBackGroundRepo, BackGroundRepo>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -87,6 +89,12 @@ namespace API_Web_Core
                       new List<string>()
                     }
                   });
+            });
+
+            services.AddStackExchangeRedisCache((options) =>
+            {
+                options.Configuration = "127.0.0.1:6379";
+                options.InstanceName = "SampleInstance";
             });
         }
 
