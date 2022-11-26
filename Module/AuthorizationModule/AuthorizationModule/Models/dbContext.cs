@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
-namespace API_Web_Core.Models
+namespace AuthorizationModule.Models
 {
     public partial class dbContext : DbContext
     {
@@ -48,7 +45,7 @@ namespace API_Web_Core.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("data source=DESKTOP-ARDK013;initial catalog=AspCore;trusted_connection=true");
+                optionsBuilder.UseSqlServer("data source=DESKTOP-ARDK013;initial catalog=authorization_module;trusted_connection=true");
             }
         }
 
@@ -162,11 +159,8 @@ namespace API_Web_Core.Models
 
             modelBuilder.Entity<GetPermissions>(entity =>
             {
-                entity.ToTable(null);
                 entity.HasNoKey();
             });
-
-
 
             OnModelCreatingPartial(modelBuilder);
         }
